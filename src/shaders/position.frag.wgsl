@@ -2,7 +2,7 @@
 
 // 5 pairs of UV voronoi points, 10 vor points total
 // the fact that is 10 points is hard coded
-@binding(0) @group(0) var<uniform> vorPointBuf : array<vec4<f32>, 5>;
+@binding(0) @group(0) var<uniform> vorPointBuf : array<vec4<f32>, 50>;
 @binding(1) @group(0) var Sampler: sampler;
 @binding(2) @group(0) var Texture: texture_2d<f32>;
 
@@ -17,7 +17,7 @@ fn main(
     // compare to each point in voronoi points buffer
     var min_dist = 2.0; // bigger than any possible value
     var index:f32 = 0.0;
-    for(var i: i32 = 0; i < 5; i++) {
+    for(var i: i32 = 0; i < 50; i++) {
         var diff:vec2<f32> = fragUV - vec2(vorPointBuf[i][0], vorPointBuf[i][1]);
         var dist:f32 = length(diff);
         if dist < min_dist {
@@ -31,8 +31,9 @@ fn main(
             index = ( f32(i) * 2.0 ) + 1.0;
         }
     }
-    var uvCoord = fragUV + ((vec2(index * 0.1, ((index * index) % 10) * 0.1)) * 0.1);
+    var uvCoord = fragUV + ((vec2(index * 0.01, ((index * index) % 100) * 0.01)) * 0.1);
     uvCoord[0] = uvCoord[0] % 1.0;
     uvCoord[1] = uvCoord[1] % 1.0;
-    return textureSample( Texture, Sampler, uvCoord );
+    //return textureSample( Texture, Sampler, uvCoord );
+    return vec4(index * 0.01, ((index * index) % 100) * 0.01, ((index * index * index) % 100) * 0.01, 1.0);
 }

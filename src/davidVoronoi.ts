@@ -27,10 +27,23 @@ async function initWebGPU(canvas: HTMLCanvasElement) {
 // create pipiline & buffers
 async function initPipeline(device: GPUDevice, format: GPUTextureFormat, numVorPoints: number) {
 
+    var center = [0.4, 0.4]
+    
     // create array of random floats
     const vorPoints = new Float32Array(numVorPoints * 2);
     for(var i = 0; i < vorPoints.length; i++){
         vorPoints[i] = Math.random()
+         
+    }
+    for(var i = 0; i < vorPoints.length; i += 2){
+        // scale the points toward a center quadratically
+        vorPoints[i]   -= center[0]
+        vorPoints[i+1] -= center[1]
+        var mag = Math.sqrt(vorPoints[i] ** 2 + vorPoints[i+1] ** 2) ** 4
+        vorPoints[i]   *= mag
+        vorPoints[i+1] *= mag
+        vorPoints[i]   += center[0]
+        vorPoints[i+1] += center[1]
     }
 
     // two triangles that cover the entire screen space
@@ -238,7 +251,7 @@ async function run(){
 
     const {device, context, format, size} = await initWebGPU(canvas)
     
-    var numVorPoints = 10 
+    var numVorPoints = 100
     
     const pipelineObj = await initPipeline(device, format, numVorPoints)
 
